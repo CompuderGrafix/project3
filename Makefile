@@ -1,20 +1,45 @@
-test: src/test.cpp InitShader.o
-	g++ -g -Wall -lGL -lGLU -lGLEW -lglut -o $@ InitShader.o src/$@.cpp
-	
-fly_through: src/fly_through.cpp InitShader.o
-	g++ -g -Wall -lGL -lGLU -lGLEW -lglut -o $@ InitShader.o src/$@.cpp 
+#! /usr/bin/make
 
-rotating_cube: src/rotating_cube.cpp InitShader.o
-	g++ -g -Wall -lGL -lGLU -lGLEW -lglut -o $@ InitShader.o src/$@.cpp 
+SOURCES = $(wildcard *.cpp)
+HEADERS = $(wildcard *.h)
+TARGETS = $(basename $(SOURCES))
 
-triangle: src/triangle.cpp InitShader.o
-	g++ -g -Wall -lGL -lGLU -lGLEW -lglut -o $@ InitShader.o src/$@.cpp 
+INIT_SHADER = Common/InitShader.o
 
-InitShader.o: src/InitShader.cpp
-	g++ -g -Wall -lGL -lGLU -lGLEW -lglut -c -o $@ src/InitShader.cpp
+CXXOPTS = -O2 -g -Wall -fmessage-length=0
+CXXDEFS = -DFREEGLUT_STATIC -DGLEW_STATIC
+CXXINCS = -Iinclude
+
+CXXFLAGS = $(CXXOPTS) $(CXXDEFS) $(CXXINCS)
+
+LDLIBS = -lGLEW -lglut -lGL -lXmu -lX11 -lm
+
+LDFLAGS = $(LDOPTS) $(LDDIRS) $(LDLIBS)
+
+DIRT = $(wildcard *.o *.i *~ */*~ *.log)
+
+#-----------------------------------------------------------------------------
+
+.PHONY: Makefile
+
+default all: $(TARGETS)
+
+$(TARGETS): $(INIT_SHADER)
+
+%: %.cpp
+	$(CXX) $(CXXFLAGS) $^ $(LDFLAGS) -o $@
+
+#-----------------------------------------------------------------------------
+
+%.i: %.cpp
+	$(CXX) -E $(CXXFLAGS) $< | uniq > $@
+
+#-----------------------------------------------------------------------------
 
 clean:
-	rm -f InitShader.o
-	rm -f test
-	rm -f rotating_cube
-	rm -f triangle
+	$(RM) $(DIRT)
+
+rmtargets:
+	$(RM) $(TARGETS)
+
+clobber: clean rmtargets

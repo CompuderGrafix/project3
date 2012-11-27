@@ -13,9 +13,13 @@
 // 
 // --- Include system headers ---
 //
-
+#include <cstdio>
+#define USE_MATH_DEFINES
 #include <cmath>
+#include <math.h>
 #include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
 
 //  Define M_PI in the case it's not defined in the math header file
 #ifndef M_PI
@@ -35,10 +39,16 @@
 #  include <OpenGL/OpenGL.h>
 #  include <GLUT/glut.h>
 #else // non-Mac OS X operating systems
-#  include <GL/glew.h>
-#  include <GL/freeglut.h>
-#  include <GL/freeglut_ext.h>
+/* Use glew.h instead of gl.h to get all the GL prototypes declared */
+#include <GL/glew.h>
+/* Using the GLUT library for the base windowing setup */
+#include <GL/glut.h>
+/* Using GLM for our transformation matrix */
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #endif  // __APPLE__
+
 // Define a helpful macro for handling offsets into buffer objects
 #define BUFFER_OFFSET( offset )   ((GLvoid*) (offset))
 
@@ -50,22 +60,22 @@
 namespace Angel {
 
 //  Helper function to load vertex and fragment shader files
-  GLuint InitShader(const char* vertexShaderFile,
-      const char* fragmentShaderFile);
+GLuint InitShader( const char* vertexShaderFile,
+		   const char* fragmentShaderFile );
 
 //  Defined constant for when numbers are too small to be used in the
 //    denominator of a division operation.  This is only used if the
 //    DEBUG macro is defined.
-  const GLfloat DivideByZeroTolerance = GLfloat(1.0e-07);
+const GLfloat  DivideByZeroTolerance = GLfloat(1.0e-07);
 
 //  Degrees-to-radians constant 
-  const GLfloat DegreesToRadians = M_PI / 180.0;
+const GLfloat  DegreesToRadians = M_PI / 180.0;
 
 }  // namespace Angel
 
 #include "vec.h"
 #include "mat.h"
-//#include "CheckError.h"
+#include "CheckError.h"
 
 #define Print(x)  do { std::cerr << #x " = " << (x) << std::endl; } while(0)
 
