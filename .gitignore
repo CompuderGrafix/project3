@@ -11,3 +11,8 @@
 *.lai
 *.la
 *.a
+fly_through
+test
+.autotools
+.cproject
+.project
